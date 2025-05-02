@@ -1,9 +1,5 @@
-<%@page import="java.util.List"%>
-<%@page import="entities.AffectationProjet"%>
-<%@page import="entities.Etudiant"%>
-<%@page import="entities.ProjetEtudiant"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@page import="entities.Etudiant"%>
 <%
     // Vérification de la session admin
     if (session.getAttribute("id") == null || !"admin".equals(session.getAttribute("role"))) {
@@ -17,10 +13,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Affectation des Projets</title>
+    <title>Statistiques des Projets</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -304,134 +301,98 @@
             font-weight: 600;
         }
 
-        /* Student List Styles - Identique à list.jsp */
-        .student-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        /* Charts Container */
+        .dashboard-container {
+            padding: 2rem;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .chart-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
             width: 100%;
         }
-
-        .student-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        .student-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-            position: relative;
-            padding-bottom: 0.5rem;
-        }
-
-        .student-title:after {
+        
+        .chart-title:after {
             content: '';
             position: absolute;
-            bottom: 0;
-            left: 0;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
             width: 60px;
-            height: 4px;
-            background: var(--secondary);
-            border-radius: 2px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
         }
-
-        .add-btn {
-            background: var(--primary);
-            color: white;
+        
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+        
+        .alert-modern {
+            border-radius: 16px;
+            padding: 18px 25px;
+            margin-bottom: 30px;
             border: none;
-            border-radius: 50px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .alert-modern i {
+            margin-right: 12px;
+            font-size: 1.2rem;
         }
 
-        .add-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
-        }
-
-        .student-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 0.75rem;
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            animation: slideUp 0.6s ease-out;
-        }
-
-        .student-table thead th {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 1.25rem 1.5rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-        }
-
-        .student-table tbody tr {
-            background: white;
-            transition: all 0.3s ease;
-            border-radius: 10px;
-        }
-
-        .student-table tbody tr:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .student-table td {
-            padding: 1.25rem 1.5rem;
-            vertical-align: middle;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-
-        .empty-message {
-            text-align: center;
-            color: #999;
-            font-style: italic;
-            padding: 2rem 0;
-        }
-
+        /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
+            from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .student-table {
-                display: block;
-                overflow-x: auto;
-            }
+        .menu-item {
+            animation: slideIn 0.4s ease-out forwards;
         }
+
+        .menu-item:nth-child(1) { animation-delay: 0.1s; }
+        .menu-item:nth-child(2) { animation-delay: 0.2s; }
+        .menu-item:nth-child(3) { animation-delay: 0.3s; }
+        .menu-item:nth-child(4) { animation-delay: 0.4s; }
+        .menu-item:nth-child(5) { animation-delay: 0.5s; }
+        .menu-item:nth-child(6) { animation-delay: 0.6s; }
     </style>
 </head>
 <body>
@@ -461,7 +422,7 @@
                 <i class="bi bi-chevron-right menu-arrow"></i>
             </a>
 
-            <a href="affectation.jsp" class="menu-item active">
+            <a href="affectation.jsp" class="menu-item">
                 <i class="bi bi-kanban-fill menu-icon"></i>
                 <span class="menu-text">Affectation Projets</span>
                 <i class="bi bi-chevron-right menu-arrow"></i>
@@ -469,7 +430,7 @@
 
             <div class="menu-title">Autres</div>
 
-            <a href="../statistique/statistique.jsp" class="menu-item">
+            <a href="../statistique/statistique.jsp" class="menu-item active">
                 <i class="bi bi-graph-up menu-icon"></i>
                 <span class="menu-text">Statistiques</span>
                 <i class="bi bi-chevron-right menu-arrow"></i>
@@ -490,65 +451,39 @@
     <!-- Main Content -->
     <div class="main-content">
         <header class="admin-header">
-            <h1 class="page-title">Affectation des Projets</h1>
+            <h1 class="page-title" id="pageTitle">Statistiques des Projets</h1>
             <div class="user-profile">
                 <div class="user-avatar"><%= prenom.charAt(0) %><%= nom.charAt(0) %></div>
                 <span><%= prenom %></span>
             </div>
         </header>
-
-        <div class="student-container">
-            <div class="student-header">
-                <h1 class="student-title">Liste des Affectations</h1>
-                <a href="formAffectation.jsp" class="add-btn">
-                    <i class="bi bi-plus-lg"></i> Nouvelle Affectation
-                </a>
+        
+        <div class="dashboard-container">
+            <div class="alert alert-danger alert-modern" style="display:none;" id="error-alert">
+                <i class="bi bi-exclamation-circle"></i>
+                <span id="error-message"></span>
             </div>
-
-            <table class="student-table" id="affectationsTable">
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Projet</th>
-                        <th>Date Début</th>
-                        <th>Date Fin</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <%
-                        List<AffectationProjet> affectations = (List<AffectationProjet>) request.getAttribute("affectations");
-                        if (affectations != null && !affectations.isEmpty()) {
-                            for (AffectationProjet aff : affectations) {
-                                Etudiant etu = aff.getEtudiant();
-                                ProjetEtudiant proj = aff.getProjet();
-                    %>
-                    <tr>
-                        <td><%= etu.getNom()%></td>
-                        <td><%= etu.getPrenom()%></td>
-                        <td><%= proj.getDescription()%></td>
-                        <td><%= aff.getDateDebut()%></td>
-                        <td><%= aff.getDateFin()%></td>
-                    </tr>
-                    <%
-                            }
-                        } else {
-                    %>
-                    <tr>
-                        <td colspan="5" class="empty-message">Aucune affectation trouvée.</td>
-                    </tr>
-                    <%
-                        }
-                    %>
-                </tbody>
-            </table>
+            
+            <div class="charts-container">
+                <!-- Bar Chart Card -->
+                <div class="chart-card">
+                    <h2 class="chart-title">Participation aux Projets</h2>
+                    <div class="chart-wrapper">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Line Chart Card -->
+                <div class="chart-card">
+                    <h2 class="chart-title">Tendance de Participation</h2>
+                    <div class="chart-wrapper">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- jQuery and DataTables -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -556,6 +491,15 @@
         // Toggle sidebar
         document.getElementById('sidebarToggle').addEventListener('click', function() {
             document.querySelector('.sidebar').classList.toggle('collapsed');
+        });
+        
+        // Update page title based on active menu item
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('pageTitle').textContent = this.querySelector('.menu-text').textContent;
+            });
         });
         
         // Animation for menu items on hover
@@ -568,15 +512,107 @@
             });
         });
         
-        // Initialize DataTable
-        $(document).ready(function() {
-            $('#affectationsTable').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json'
-                },
-                responsive: true
-            });
+        // Load data from your controller
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('${pageContext.request.contextPath}/ProjetParEtudiantController')
+                .then(response => {
+                    if (!response.ok) throw new Error(`Erreur HTTP! Statut: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Données reçues:", data);
+                    
+                    if (!data || data.length === 0) {
+                        throw new Error("Aucune donnée disponible");
+                    }
+
+                    const labels = data.map(item => item.projet || "Projet sans nom");
+                    const values = data.map(item => item.etudiantCount || 0);
+                    
+                    createBarChart(labels, values);
+                    createLineChart(labels, values);
+                })
+                .catch(err => {
+                    console.error('Erreur:', err);
+                    const errorMsg = document.getElementById('error-message');
+                    errorMsg.textContent = `Erreur: ${err.message}`;
+                    document.getElementById('error-alert').style.display = 'flex';
+                    
+                    // Affichez un graphique vide en cas d'erreur
+                    createBarChart([], []);
+                    createLineChart([], []);
+                });
         });
+
+        function createBarChart(labels, values) {
+            const ctx = document.getElementById('barChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Nombre d\'étudiants',
+                        data: values,
+                        backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Nombre d\'étudiants'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Projets'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createLineChart(labels, values) {
+            const ctx = document.getElementById('lineChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Nombre d\'étudiants',
+                        data: values,
+                        fill: false,
+                        borderColor: 'rgba(247, 37, 133, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Nombre d\'étudiants'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Projets'
+                            }
+                        }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>

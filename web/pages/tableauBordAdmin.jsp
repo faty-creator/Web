@@ -1,21 +1,20 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%
-    // Vérification de la session admin
-    if (session.getAttribute("id") == null || !"admin".equals(session.getAttribute("role"))) {
-        response.sendRedirect("../pages/Authentification.jsp");
-        return;
-    }
-    
-    String nom = (String) session.getAttribute("nom");
-    String prenom = (String) session.getAttribute("prenom");
-%>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Tableau de Bord Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Accueil - Gestion de projets étudiants</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
     <style>
         :root {
             --primary: #4361ee;
@@ -575,71 +574,73 @@
 </head>
 <body>
     <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <div class="admin-badge">
-                <div class="admin-icon">
-                    <i class="bi bi-shield-lock"></i>
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="admin-badge">
+                    <div class="admin-icon">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <span class="admin-text">Espace Admin</span>
                 </div>
-                <span class="admin-text">Admin - <%= prenom.charAt(0) %>.<%= nom %></span>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-title">Navigation</div>
+
+                <a href="tableauBordAdmin.jsp" class="menu-item active">
+                    <i class="bi bi-house-door menu-icon"></i>
+                    <span class="menu-text">Tableau de bord</span>
+                    <i class="bi bi-chevron-right menu-arrow"></i>
+                </a>
+
+                <a href="list.jsp" class="menu-item">
+                    <i class="bi bi-people-fill menu-icon"></i>
+                    <span class="menu-text">Gestion des Étudiants</span>
+                    <i class="bi bi-chevron-right menu-arrow"></i>
+                </a>
+
+                <a href="affectation.jsp" class="menu-item">
+                    <i class="bi bi-kanban-fill menu-icon"></i>
+                    <span class="menu-text">Affectation des Projets</span>
+                    <i class="bi bi-chevron-right menu-arrow"></i>
+                </a>
+
+                <div class="menu-title">Autres</div>
+
+
+
+                <a href="../statistique/statistique.jsp" class="menu-item">
+                    <i class="bi bi-graph-up menu-icon"></i>
+                    <span class="menu-text">Statistiques</span>
+                    <i class="bi bi-chevron-right menu-arrow"></i>
+                </a>
+
+
+
+                <a href="Authentification.jsp" class="menu-item">
+                    <i class="bi bi-box-arrow-right menu-icon"></i>
+                    <span class="menu-text">Déconnexion</span>
+                    <i class="bi bi-chevron-right menu-arrow"></i>
+                </a>
+
+                <button class="toggle-btn" id="sidebarToggle">
+                    <i class="bi bi-arrow-left-circle-fill"></i>
+                </button>
             </div>
         </div>
-
-        <div class="sidebar-menu">
-            <div class="menu-title">Navigation</div>
-
-            <a href="dashboard.jsp" class="menu-item active">
-                <i class="bi bi-house-door menu-icon"></i>
-                <span class="menu-text">Tableau de bord</span>
-                <i class="bi bi-chevron-right menu-arrow"></i>
-            </a>
-
-            <a href="list.jsp" class="menu-item">
-                <i class="bi bi-people-fill menu-icon"></i>
-                <span class="menu-text">Gestion des Étudiants</span>
-                <i class="bi bi-chevron-right menu-arrow"></i>
-            </a>
-
-            <a href="affectation.jsp" class="menu-item">
-                <i class="bi bi-kanban-fill menu-icon"></i>
-                <span class="menu-text">Affectation des Projets</span>
-                <i class="bi bi-chevron-right menu-arrow"></i>
-            </a>
-
-            <div class="menu-title">Autres</div>
-
-            <a href="../statistique/statistique.jsp" class="menu-item">
-                <i class="bi bi-graph-up menu-icon"></i>
-                <span class="menu-text">Statistiques</span>
-                <i class="bi bi-chevron-right menu-arrow"></i>
-            </a>
-
-            <a href="../DeconnexionController" class="menu-item">
-                <i class="bi bi-box-arrow-right menu-icon"></i>
-                <span class="menu-text">Déconnexion</span>
-                <i class="bi bi-chevron-right menu-arrow"></i>
-            </a>
-
-            <button class="toggle-btn" id="sidebarToggle">
-                <i class="bi bi-arrow-left-circle-fill"></i>
-            </button>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <div class="main-content">
         <header class="admin-header">
-            <h1 class="page-title">Tableau de Bord</h1>
+            <h1 class="page-title">Tableau de bord</h1>
             <div class="user-profile">
-                <div class="user-avatar"><%= prenom.charAt(0) %><%= nom.charAt(0) %></div>
-                <span><%= prenom %></span>
+                <div class="user-avatar">AD</div>
             </div>
         </header>
         
         <div class="dashboard-container">
             <!-- Welcome Card -->
             <div class="welcome-card">
-                <h1 class="welcome-title">Bienvenue, <%= prenom %></h1>
+                <h1 class="welcome-title">Bienvenue sur la plateforme de gestion de projets étudiants</h1>
                 <p class="welcome-text">
                     Gérez efficacement les projets de vos étudiants, suivez leur progression et facilitez la collaboration entre les différents acteurs.
                 </p>

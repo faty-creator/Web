@@ -33,18 +33,20 @@ public class AuthentificationController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        List<User> users = us.findByEmail(email);
+        if(email == null || password == null || email.isEmpty() || password.isEmpty()) {
+            response.sendRedirect("pages/Authentification.jsp?msg=Veuillez remplir tous les champs");
+            return;
+        }
 
-        System.out.println("Email : " + email);
-        System.out.println("Password : " + password);
+        List<User> users = us.findByEmail(email);
 
         if (users != null && !users.isEmpty()) {
             User u = users.get(0);
-            System.out.println(u.getNom());
+            
             if (u.getPassword().equals(password)) {
                 HttpSession session = request.getSession();
                 session.setAttribute("id", u.getId());
@@ -56,35 +58,30 @@ public class AuthentificationController extends HttpServlet {
                     Admin admin = adminService.findById(u.getId());
                     if (admin != null) {
                         session.setAttribute("role", "admin");
-                        RequestDispatcher dispatcher = request.getRequestDispatcher("pages/dashboard.jsp");
-                        dispatcher.forward(request, response);
-                        System.out.println(admin.getNom()+" "+admin.getPrenom());
+                        response.sendRedirect("pages/tableauBordAdmin.jsp");
                         return;
                     }
                 } catch (Exception e) {
-                    System.out.println("Erreur lors de la recherche admin : " + e.getMessage());
+                    System.out.println("Erreur admin: " + e.getMessage());
                 }
 
                 try {
                     Etudiant etudiant = etudiantService.findById(u.getId());
                     if (etudiant != null) {
                         session.setAttribute("role", "etudiant");
-                        RequestDispatcher dispatcher = request.getRequestDispatcher("pages/dashboardEtudiant.jsp");
-                        dispatcher.forward(request, response);
+                        session.setAttribute("cne", etudiant.getCne());
+                        response.sendRedirect("pages/dashboardEtudiant.jsp");
                         return;
                     }
                 } catch (Exception e) {
-                    System.out.println("Erreur lors de la recherche étudiant : " + e.getMessage());
+                    System.out.println("Erreur étudiant: " + e.getMessage());
                 }
 
-                // Aucun rôle trouvé
                 response.sendRedirect("pages/Authentification.jsp?msg=Rôle non reconnu");
             } else {
-                // Mot de passe incorrect
                 response.sendRedirect("pages/Authentification.jsp?msg=Mot de passe incorrect");
             }
         } else {
-            // Email introuvable
             response.sendRedirect("pages/Authentification.jsp?msg=Email introuvable");
         }
     }

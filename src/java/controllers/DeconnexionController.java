@@ -8,14 +8,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet(name = "DeconnexionController", urlPatterns = {"/deconnexionController"})
+@WebServlet(name = "DeconnexionController", urlPatterns = {"/DeconnexionController"})
 public class DeconnexionController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        session.invalidate();  // Invalidate the session
-        response.sendRedirect("Authentification.jsp");  // Redirect to authentication page
+        
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        response.sendRedirect(request.getContextPath() + "/pages/Authentification.jsp");
     }
 
     @Override
@@ -28,10 +31,5 @@ public class DeconnexionController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-    }
-
-    @Override
-    public String getServletInfo() {
-        return "Controller for user logout";
     }
 }

@@ -247,7 +247,9 @@
                     </div>
 
                     <div class="btn-group">
-                        <a href="Route?page=affectation" class="btn btn-secondary">Annuler</a>
+                        <a href="affectation.jsp
+                           
+                           " class="btn btn-secondary">Annuler</a>
                         <button type="submit" class="btn btn-primary">Enregistrer</button>
                     </div>
                 </form>

@@ -2,13 +2,24 @@
 <%@page import="services.EtudiantService"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%
+    // Vérification de la session
+    if (session.getAttribute("id") == null || !"admin".equals(session.getAttribute("role"))) {
+        response.sendRedirect("../pages/Authentification.jsp");
+        return;
+    }
+    
+    String nom = (String) session.getAttribute("nom");
+    String prenom = (String) session.getAttribute("prenom");
+%>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Liste des Étudiants</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <style>
-        /* Styles du sidebar - identiques à votre demande */
         :root {
             --primary: #4361ee;
             --primary-dark: #3a0ca3;
@@ -37,6 +48,7 @@
             transition: all 0.3s ease;
         }
         
+        /* Sidebar Styles */
         .sidebar {
             width: var(--sidebar-width);
             height: 100vh;
@@ -290,7 +302,7 @@
             font-weight: 600;
         }
         
-        /* Styles existants de list.jsp inchangés */
+        /* Student List Styles */
         .student-container {
             max-width: 1200px;
             margin: 2rem auto;
@@ -470,33 +482,45 @@
                 <div class="admin-icon">
                     <i class="bi bi-shield-lock"></i>
                 </div>
-                <span class="admin-text">Espace Admin</span>
+                <span class="admin-text">Admin - <%= prenom.charAt(0) %>.<%= nom %></span>
             </div>
         </div>
-        
+
         <div class="sidebar-menu">
-            <div class="menu-title">Gestion</div>
-            
-            <a href="../Route?page=list" class="menu-item active">
+            <div class="menu-title">Navigation</div>
+
+            <a href="tableauBordAdmin.jsp" class="menu-item">
+                <i class="bi bi-house-door menu-icon"></i>
+                <span class="menu-text">Tableau de bord</span>
+                <i class="bi bi-chevron-right menu-arrow"></i>
+            </a>
+
+            <a href="list.jsp" class="menu-item active">
                 <i class="bi bi-people-fill menu-icon"></i>
                 <span class="menu-text">Gestion des Étudiants</span>
                 <i class="bi bi-chevron-right menu-arrow"></i>
             </a>
-            
-            <a href="../Route?page=listAffectation" class="menu-item">
+
+            <a href="affectation.jsp" class="menu-item">
                 <i class="bi bi-kanban-fill menu-icon"></i>
                 <span class="menu-text">Affectation des Projets</span>
                 <i class="bi bi-chevron-right menu-arrow"></i>
             </a>
-            
+
             <div class="menu-title">Autres</div>
-            
-            <a href="#" class="menu-item">
-                <i class="bi bi-gear-fill menu-icon"></i>
-                <span class="menu-text">Paramètres</span>
+
+            <a href="../statistique/statistique.jsp" class="menu-item">
+                <i class="bi bi-graph-up menu-icon"></i>
+                <span class="menu-text">Statistiques</span>
                 <i class="bi bi-chevron-right menu-arrow"></i>
             </a>
-            
+
+            <a href="../DeconnexionController" class="menu-item">
+                <i class="bi bi-box-arrow-right menu-icon"></i>
+                <span class="menu-text">Déconnexion</span>
+                <i class="bi bi-chevron-right menu-arrow"></i>
+            </a>
+
             <button class="toggle-btn" id="sidebarToggle">
                 <i class="bi bi-arrow-left-circle-fill"></i>
             </button>
@@ -508,19 +532,20 @@
         <header class="admin-header">
             <h1 class="page-title">Gestion des Étudiants</h1>
             <div class="user-profile">
-                <div class="user-avatar">AD</div>
+                <div class="user-avatar"><%= prenom.charAt(0) %><%= nom.charAt(0) %></div>
+                <span><%= prenom %></span>
             </div>
         </header>
         
         <div class="student-container">
             <div class="student-header">
                 <h1 class="student-title">Liste des Étudiants</h1>
-                <a href="../Route?page=form" class="add-btn">
+                <a href="form.jsp" class="add-btn">
                     <i class="bi bi-plus-lg"></i> Nouvel Étudiant
                 </a>
             </div>
             
-            <table class="student-table">
+            <table class="student-table" id="studentsTable">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -532,10 +557,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% EtudiantService es = new EtudiantService();
-                            java.util.List<Etudiant> etudiants = es.findAll();
-                            if(etudiants != null && !etudiants.isEmpty()) {
-                                for(Etudiant e : etudiants){ %>
+                    <% 
+                        EtudiantService es = new EtudiantService();
+                        java.util.List<Etudiant> etudiants = es.findAll();
+                        if(etudiants != null && !etudiants.isEmpty()) {
+                            for(Etudiant e : etudiants){ 
+                    %>
                     <tr>
                         <td><%= e.getId() %></td>
                         <td><%= e.getCne() %></td>
@@ -554,18 +581,25 @@
                         </td>
                     </tr>
                     <% 
-                                }
-                            } else {
-                        %>
-                        <tr>
-                            <td colspan="6" class="empty-message">Aucun étudiant trouvé</td>
-                        </tr>
-                        <% } %>
+                            }
+                        } else {
+                    %>
+                    <tr>
+                        <td colspan="6" class="text-center py-4">Aucun étudiant trouvé</td>
+                    </tr>
+                    <% } %>
                 </tbody>
             </table>
         </div>
     </div>
 
+    <!-- jQuery and DataTables -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         function confirmDelete(id) {
             if (confirm("Êtes-vous sûr de vouloir supprimer cet étudiant ?")) {
@@ -578,9 +612,19 @@
             document.querySelector('.sidebar').classList.toggle('collapsed');
         });
         
-        // Initialisation DataTable
-        document.addEventListener('DOMContentLoaded', function() {
-            $('.student-table').DataTable({
+        // Animation for menu items on hover
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+        
+        // Initialize DataTable
+        $(document).ready(function() {
+            $('#studentsTable').DataTable({
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json'
                 },

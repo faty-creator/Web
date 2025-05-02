@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import util.HibernateUtil;
 
 import java.util.List;
+import org.hibernate.Transaction;
 
 public class ProjetEtudiantDao extends AbstractDao<ProjetEtudiant> {
 
@@ -59,4 +60,47 @@ public List<ProjetEtudiant> findByEncadrent(String encadrent) {
     }
     return projets;
 }
+
+
+ public List<Object[]> countEtudiantsByProjet() {
+        Session session = null;
+        Transaction tx = null;
+        List<Object[]> stats = null;
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            tx = session.beginTransaction();
+
+             stats = session.getNamedQuery("ProjetEtudiant.countEtudiantsByProjet").list();
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            throw e;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return stats;
+    }
+
+    // Nouvelle méthode pour compter toutes les entrées de ProjetEtudiant
+    public long countAll() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = null;
+        long count = 0;
+        try {
+            tx = session.beginTransaction();
+            count = ((Number) session.createSQLQuery("SELECT COUNT(*) FROM projet_etudiant").uniqueResult()).longValue();
+            System.out.println("Nombre total de Projet : " + count); // Log pour déboguer
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return count;
+    }
 }

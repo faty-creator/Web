@@ -290,7 +290,7 @@
                     </div>
                     
                     <div class="btn-group">
-                        <a href="Route?page=list" class="btn btn-secondary">
+                        <a href="list.jsp" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Annuler
                         </a>
                         <button type="submit" class="btn btn-primary">

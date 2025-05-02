@@ -9,7 +9,16 @@ import java.util.List;
 @NamedQueries({
     @NamedQuery(name = "ProjetEtudiant.findAll", query = "FROM ProjetEtudiant"),
     @NamedQuery(name = "ProjetEtudiant.findByTitre", query = "FROM ProjetEtudiant WHERE titre = :titre"),
-    @NamedQuery(name = "ProjetEtudiant.findByEncadrent", query = "FROM ProjetEtudiant WHERE encadrent = :encadrent")
+    @NamedQuery(name = "ProjetEtudiant.findByEncadrent", query = "FROM ProjetEtudiant WHERE encadrent = :encadrent"),
+    
+    // 🔽 Nouvelle requête pour les statistiques
+    @NamedQuery(
+        name = "ProjetEtudiant.countEtudiantsByProjet",
+        query = "SELECT p.titre AS projet, COUNT(a.etudiant) AS etudiantCount " +
+                "FROM ProjetEtudiant p LEFT JOIN p.affectations a " +
+                "GROUP BY p.titre " +
+                "ORDER BY etudiantCount DESC"
+    )
 })
 public class ProjetEtudiant {
 
