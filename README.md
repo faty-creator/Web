@@ -6,9 +6,10 @@
 - [❓ Problématique](#-problématique)  
 - [🎯 Objectifs](#-objectifs)  
 - [🧩 Diagramme de Classe](#-diagramme-de-classe)  
-- [🗃️ Modèle Conceptuel de la Base](#-Modèle-conceptuel-de-la-base-généré)  
-- [⚙️ Exécution des Tests](#-Exécution-des-tests-dans-la-console)  
+- [🗃️ Modèle Conceptuel de la Base](#-modèle-conceptuel-de-la-base-généré)  
+- [⚙️ Exécution des Tests](#-exécution-des-tests-dans-la-console)  
 - [🛠 Technologies](#-technologies)  
+- [🏗️ Architecture](#-architecture)  
 
 ---
 
@@ -77,5 +78,7 @@ La gestion manuelle des projets étudiants présente plusieurs défis :
 ### 🗃️ Base de données :
 - **MySQL** – Système relationnel pour la gestion des données (étudiants, enseignants, projets, affectations).
 
+---
+## 🏗️ Architecture 
 
-
+![interaction avec l'utilisateur](https://github.com/user-attachments/assets/85aa5984-d888-42ab-b9f1-7d19b2f37fcc)
