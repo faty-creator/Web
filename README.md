@@ -14,7 +14,8 @@
 - [🗃️ Modèle Conceptuel de la Base](#-modèle-conceptuel-de-la-base-généré)  
 - [⚙️ Exécution des Tests](#-exécution-des-tests-dans-la-console)  
 - [🛠 Technologies](#-technologies)  
-- [🏗️ Architecture](#-architecture)  
+- [🏗️ Architecture](#-architecture)
+- [Démonstration et Exécution des Tests](#démonstration-et-exécution-des-tests)
 
 ---
 
@@ -86,3 +87,18 @@ La gestion manuelle des projets étudiants présente plusieurs défis :
 ---
 ## 🏗️ Architecture 
 ![interaction avec l'utilisateur](https://github.com/user-attachments/assets/85aa5984-d888-42ab-b9f1-7d19b2f37fcc)
+---
+
+## 🎥 Démonstration
+
+Voici une courte démonstration de projet  **Gestion de Projets Étudiants**, illustrant :
+
+- La connexion en tant qu’étudiant ou administrateur
+- L’affichage de la liste des projets
+- L’affectation dynamique d’un projet à un étudiant (AJAX)
+- La visualisation des statistiques via des graphiques interactifs (Chart.js)
+
+🎬 *Vidéo de démonstration :* 
+
+https://github.com/user-attachments/assets/8665cb10-0dac-4a28-862a-db053a90fc97
+
