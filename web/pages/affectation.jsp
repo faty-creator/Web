@@ -449,37 +449,26 @@
         <div class="sidebar-menu">
             <div class="menu-title">Navigation</div>
 
-            <a href="tableauBordAdmin.jsp" class="menu-item">
-                <i class="bi bi-house-door menu-icon"></i>
-                <span class="menu-text">Tableau de bord</span>
-                <i class="bi bi-chevron-right menu-arrow"></i>
-            </a>
-
-            <a href="list.jsp" class="menu-item">
-                <i class="bi bi-people-fill menu-icon"></i>
-                <span class="menu-text">Gestion Étudiants</span>
-                <i class="bi bi-chevron-right menu-arrow"></i>
-            </a>
-
-            <a href="affectation.jsp" class="menu-item active">
-                <i class="bi bi-kanban-fill menu-icon"></i>
-                <span class="menu-text">Affectation Projets</span>
-                <i class="bi bi-chevron-right menu-arrow"></i>
-            </a>
-
-            <div class="menu-title">Autres</div>
-
-            <a href="../statistique/statistique.jsp" class="menu-item">
-                <i class="bi bi-graph-up menu-icon"></i>
-                <span class="menu-text">Statistiques</span>
-                <i class="bi bi-chevron-right menu-arrow"></i>
-            </a>
-
-            <a href="../DeconnexionController" class="menu-item">
-                <i class="bi bi-box-arrow-right menu-icon"></i>
-                <span class="menu-text">Déconnexion</span>
-                <i class="bi bi-chevron-right menu-arrow"></i>
-            </a>
+           <a href="${pageContext.request.contextPath}/pages/tableauBordAdmin.jsp" class="menu-item">
+    <i class="bi bi-house-door menu-icon"></i>
+    <span class="menu-text">Tableau de bord</span>
+</a>
+<a href="${pageContext.request.contextPath}/pages/list.jsp" class="menu-item">
+    <i class="bi bi-people-fill menu-icon"></i>
+    <span class="menu-text">Gestion Étudiants</span>
+</a>
+<a href="${pageContext.request.contextPath}/pages/affectation.jsp" class="menu-item active">
+    <i class="bi bi-kanban-fill menu-icon"></i>
+    <span class="menu-text">Affectation Projets</span>
+</a>
+<a href="${pageContext.request.contextPath}/statistique/statistique.jsp" class="menu-item">
+    <i class="bi bi-graph-up menu-icon"></i>
+    <span class="menu-text">Statistiques</span>
+</a>
+<a href="${pageContext.request.contextPath}/DeconnexionController" class="menu-item">
+    <i class="bi bi-box-arrow-right menu-icon"></i>
+    <span class="menu-text">Déconnexion</span>
+</a>
 
             <button class="toggle-btn" id="sidebarToggle">
                 <i class="bi bi-arrow-left-circle-fill"></i>

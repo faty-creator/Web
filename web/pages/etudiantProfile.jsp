@@ -13,7 +13,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Profil Étudiant</title>
+       <title>Profil Étudiant</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
@@ -462,6 +464,33 @@
                 color: #6c757d;
             }
 
+            /* Styles pour le formulaire de modification */
+            .form-edit {
+                display: none;
+            }
+            
+            .form-control-edit {
+                background: transparent;
+                border: none;
+                border-bottom: 1px solid #dee2e6;
+                color: #6c757d;
+                padding: 0.25rem 0;
+                width: 100%;
+            }
+            
+            .form-control-edit:focus {
+                outline: none;
+                border-color: var(--primary);
+            }
+            
+            .form-actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 1rem;
+                margin-top: 1.5rem;
+            }
+
+            /* Projects Section */
             .projects-section {
                 background: white;
                 border-radius: 15px;
@@ -595,6 +624,16 @@
                 transform: translateY(-2px);
             }
 
+            /* Alertes */
+            .alert-fixed {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1100;
+                max-width: 400px;
+                animation: fadeIn 0.3s ease-out;
+            }
+
             @keyframes fadeIn {
                 from { opacity: 0; transform: translateY(20px); }
                 to { opacity: 1; transform: translateY(0); }
@@ -653,16 +692,12 @@
             <div class="sidebar-menu">
                 <div class="menu-title">Navigation</div>
 
-
-
-
-
-
                 <a href="etudiantProfile.jsp" class="menu-item active">
                     <i class="bi bi-person menu-icon"></i>
                     <span class="menu-text">Mon Profil</span>
                     <i class="bi bi-chevron-right menu-arrow"></i>
                 </a>
+                
                 <div class="menu-title">Autres</div>
                 <a href="../DeconnexionController" class="menu-item">
                     <i class="bi bi-box-arrow-right menu-icon"></i>
@@ -677,7 +712,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="main-content">
+       <div class="main-content">
             <header class="student-header">
                 <h1 class="page-title">Mon Profil</h1>
                 <div class="user-profile">
@@ -692,16 +727,35 @@
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
+                <!-- Container pour les alertes AJAX -->
+                <div id="ajaxAlerts" style="position: fixed; top: 20px; right: 20px; z-index: 1100;"></div>
+                <!-- Messages d'erreur/succès -->
+                <c:if test="${not empty sessionScope.success}">
+                    <div class="alert alert-success alert-dismissible fade show alert-fixed">
+                        <i class="bi bi-check-circle me-2"></i>${sessionScope.success}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <c:remove var="success" scope="session" />
+                </c:if>
+                
+                <c:if test="${not empty sessionScope.error}">
+                    <div class="alert alert-danger alert-dismissible fade show alert-fixed">
+                        <i class="bi bi-exclamation-triangle me-2"></i>${sessionScope.error}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <c:remove var="error" scope="session" />
+                </c:if>
+
                 <!-- Profile Header -->
                 <div class="profile-header animate__animated animate__fadeIn">
                     <div class="profile-pic-container">
                         <img src="../images/profileEtudiant.jpeg" alt="Photo de profil" class="profile-pic">
-                        <button class="edit-profile-btn" title="Modifier le profil">
+                        <button class="edit-profile-btn" onclick="toggleEdit()" title="Modifier le profil">
                             <i class="bi bi-pencil"></i>
                         </button>
                     </div>
                     <div class="profile-name">
-                        <h2>${etudiant.prenom} ${etudiant.nom}</h2>
+                        <h2 id="profileFullName">${etudiant.prenom} ${etudiant.nom}</h2>
                         <p>${etudiant.cne}</p>
                     </div>
                     <div class="social-links">
@@ -715,31 +769,55 @@
                 <!-- Personal Info -->
                 <div class="profile-info animate__animated animate__fadeIn">
                     <h3 class="info-title"><i class="bi bi-person-lines-fill"></i> Informations personnelles</h3>
-
-                    <div class="info-item">
-                        <div class="info-label">CNE:</div>
-                        <div class="info-value">${etudiant.cne}</div>
+                    
+                    <!-- Mode visualisation -->
+                    <div id="viewMode">
+                        
+                        <div class="info-item">
+                            <div class="info-label">Nom:</div>
+                            <div class="info-value" id="viewNom">${etudiant.nom}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Prénom:</div>
+                            <div class="info-value" id="viewPrenom">${etudiant.prenom}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email:</div>
+                            <div class="info-value" id="viewEmail">${etudiant.email}</div>
+                        </div>
                     </div>
+                    
+                    <!-- Mode édition -->
+                    <form id="editMode" class="form-edit" 
+                          action="${pageContext.request.contextPath}/ModifierProfilEtudiantController" 
+                          method="POST" 
+                          onsubmit="submitForm(event)">
+                        <input type="hidden" name="cne" value="${etudiant.cne}">
 
-                    <div class="info-item">
-                        <div class="info-label">Email:</div>
-                        <div class="info-value">${etudiant.email}</div>
-                    </div>
+                        <div class="info-item">
+                            <div class="info-label">Nom:</div>
+                            <div class="info-value">
+                                <input type="text" name="nom" value="${etudiant.nom}" class="form-control-edit" required>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Prénom:</div>
+                            <div class="info-value">
+                                <input type="text" name="prenom" value="${etudiant.prenom}" class="form-control-edit" required>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email:</div>
+                            <div class="info-value">
+                                <input type="email" name="email" value="${etudiant.email}" class="form-control-edit" required>
+                            </div>
+                        </div>
 
-                    <div class="info-item">
-                        <div class="info-label">Téléphone:</div>
-                        <div class="info-value">${etudiant.telephone}</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-label">Filière:</div>
-                        <div class="info-value">${etudiant.filiere}</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-label">Niveau:</div>
-                        <div class="info-value">${etudiant.niveau}</div>
-                    </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline-secondary" onclick="toggleEdit()">Annuler</button>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">Enregistrer</button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Projects Section -->
@@ -796,35 +874,98 @@
             </div>
         </div>
 
-        <!-- Bootstrap JS Bundle with Popper -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
         <script>
-                    // Toggle sidebar
-                    document.getElementById('sidebarToggle').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('collapsed');
+            // Toggle sidebar
+            document.getElementById('sidebarToggle').addEventListener('click', function() {
+                document.querySelector('.sidebar').classList.toggle('collapsed');
             });
-                    // Animation for menu items on hover
-                    document.querySelectorAll('.menu-item').forEach(item = > {
-            item.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateX(5px)';
-            });
-                    item.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateX(0)';
-                    });
-            });
-                    // Edit profile button
-                    document.querySelector('.edit-profile-btn').addEventListener('click', function() {
-            window.location.href = 'modifierProfil.jsp';
-            });
-                    // View details buttons
-                    document.querySelectorAll('.view-details-btn').forEach(btn = > {
-            btn.addEventListener('click', function() {
-            const projectCard = this.closest('.project-card');
-                    const projectTitle = projectCard.querySelector('.project-header').textContent.trim();
-                    alert('Détails du projet: ' + projectTitle);
-            });
-            });
-        </script>
+            
+            // Toggle edit mode
+            function toggleEdit() {
+                const viewMode = document.getElementById('viewMode');
+                const editMode = document.getElementById('editMode');
+                
+                if (viewMode.style.display === 'none') {
+                    viewMode.style.display = 'block';
+                    editMode.style.display = 'none';
+                } else {
+                    viewMode.style.display = 'none';
+                    editMode.style.display = 'block';
+                }
+            }
+
+            // Soumission du formulaire
+           function submitForm(event) {
+    event.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enregistrement...';
+    submitBtn.disabled = true;
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: new URLSearchParams(formData),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Erreur réseau');
+        return response.json();
+    })
+    .then(data => {
+        console.log("Réponse reçue:", data); // Pour déboguer
+        
+        if (data.success) {
+            // Récupérer les valeurs du formulaire
+            const newNom = formData.get('nom');
+            const newPrenom = formData.get('prenom');
+            const newEmail = formData.get('email');
+            
+            // Mettre à jour les champs dans la section "Informations personnelles"
+            document.getElementById('viewNom').textContent = newNom;
+            document.getElementById('viewPrenom').textContent = newPrenom;
+            document.getElementById('viewEmail').textContent = newEmail;
+            
+            // Mettre à jour le header
+            document.getElementById('profileFullName').textContent = 
+                newPrenom + ' ' + newNom;
+                
+            // Mise à jour des initiales dans l'avatar
+            document.querySelector('.user-avatar').textContent = 
+                newPrenom.charAt(0) + newNom.charAt(0);
+            document.querySelector('.user-profile span').textContent = newPrenom;
+            
+            // Mettre à jour les valeurs dans le formulaire aussi
+            form.elements['nom'].value = newNom;
+            form.elements['prenom'].value = newPrenom;
+            form.elements['email'].value = newEmail;
+            
+            // Afficher un message de succès
+            showAlert('success', data.message || 'Profil mis à jour avec succès');
+            
+            // Revenir au mode visualisation
+            toggleEdit();
+        } else {
+            showAlert('danger', data.message || 'Échec de la mise à jour');
+        }
+    })
+    .catch(error => {
+        console.error("Erreur:", error); // Pour déboguer
+        showAlert('danger', 'Erreur: ' + error.message);
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+</script>
+
     </body>
 </html>

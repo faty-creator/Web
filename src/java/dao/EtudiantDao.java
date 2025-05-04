@@ -55,4 +55,43 @@ public class EtudiantDao extends AbstractDao<Etudiant> {
         }
         return etudiant;
     }
+    public Etudiant findById(Long id) {
+    Session session = null;
+    Transaction tx = null;
+    Etudiant etudiant = null;
+    try {
+        session = HibernateUtil.getSessionFactory().openSession();
+        tx = session.beginTransaction();
+        etudiant = (Etudiant) session.get(Etudiant.class, id);
+        tx.commit();
+    } catch (HibernateException e) {
+        if (tx != null) tx.rollback();
+        e.printStackTrace();
+    } finally {
+        if (session != null) {
+            session.close();
+        }
+    }
+    return etudiant;
+}
+   public boolean update(Etudiant etudiant) {
+    Session session = null;
+    Transaction tx = null;
+    try {
+        session = HibernateUtil.getSessionFactory().openSession();
+        tx = session.beginTransaction();
+        session.update(etudiant);
+        tx.commit();
+        return true;
+    } catch (Exception e) {
+        if (tx != null) tx.rollback();
+        e.printStackTrace();
+        return false;
+    } finally {
+        if (session != null) {
+            session.close();
+        }
+    }
+}
+
 }

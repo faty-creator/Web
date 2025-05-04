@@ -1,6 +1,7 @@
 package services;
 
 import dao.AffectationProjetDao; // Adjust this import based on your actual DAO package
+import entities.AffectationId;
 import entities.AffectationProjet; // Adjust this import based on your actual entity package
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -46,5 +47,9 @@ public class AffectationProjetService implements IService<AffectationProjet> {
         return affectationProjetDao.findById(id);
     }
 
+   public AffectationProjet findById(int etudiantId, int projetId) {
+        AffectationId affectationId = new AffectationId(etudiantId, projetId); // Création de l'objet AffectationId
+        return affectationProjetDao.findById(affectationId); // Appel de la méthode du DAO
+    }
     
 }

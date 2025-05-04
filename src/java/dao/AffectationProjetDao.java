@@ -1,5 +1,6 @@
 package dao;
 
+import entities.AffectationId;
 import entities.AffectationProjet;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -44,4 +45,19 @@ public class AffectationProjetDao extends AbstractDao<AffectationProjet> {
         }
         return affectation;
     }
+    public AffectationProjet findById(AffectationId id) {
+    Session session = null;
+    AffectationProjet affectation = null;
+    try {
+        session = HibernateUtil.getSessionFactory().openSession();
+        affectation = (AffectationProjet) session.get(AffectationProjet.class, id);
+    } catch (HibernateException e) {
+        e.printStackTrace();
+    } finally {
+        if (session != null) session.close();
+    }
+    return affectation;
+}
+
+    
 }
