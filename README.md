@@ -1,5 +1,8 @@
 # 🎓 Gestion de Projets Étudiants
 
+![image](https://github.com/user-attachments/assets/82fae575-bda5-454a-8c53-1ea68a56de7e)
+
+
 ---
 ## 📚 Sommaire  
 - [📌 Contexte](#-contexte)  
@@ -80,5 +83,4 @@ La gestion manuelle des projets étudiants présente plusieurs défis :
 
 ---
 ## 🏗️ Architecture 
-
 ![interaction avec l'utilisateur](https://github.com/user-attachments/assets/85aa5984-d888-42ab-b9f1-7d19b2f37fcc)
