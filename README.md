@@ -1,7 +1,7 @@
 # 🎓 Gestion de Projets Étudiants
 
 <p align="center">
-  <img src="[Images/logo.jpg](https://github.com/user-attachments/assets/82fae575-bda5-454a-8c53-1ea68a56de7e)" alt="Logo de l'application" width="300">
+  <img src="https://github.com/user-attachments/assets/82fae575-bda5-454a-8c53-1ea68a56de7e" alt="Logo de l'application" width="300">
 </p>
 ---
 ## 📚 Sommaire  
