@@ -3,6 +3,8 @@
 <p align="center">
   <img src="https://github.com/user-attachments/assets/82fae575-bda5-454a-8c53-1ea68a56de7e" alt="Logo de l'application" width="300">
 </p>
+
+
 ---
 ## 📚 Sommaire  
 - [📌 Contexte](#-contexte)  
