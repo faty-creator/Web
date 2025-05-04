@@ -87,6 +87,7 @@ La gestion manuelle des projets étudiants présente plusieurs défis :
 ---
 ## 🏗️ Architecture 
 ![interaction avec l'utilisateur](https://github.com/user-attachments/assets/85aa5984-d888-42ab-b9f1-7d19b2f37fcc)
+
 ---
 
 ## 🎥 Démonstration
